@@ -25,6 +25,8 @@ func main() {
 	}
 
 	branches := rep.GetLocalBranches(*repo)
+
+	//STILL TO IMPLEMENT DELETE FUNCTION
 	rep.DeleteLocalBranches(branches)
 
 }

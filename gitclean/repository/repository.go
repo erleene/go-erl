@@ -43,6 +43,7 @@ func GetLocalBranches(dir git.Repository) interface{} {
 	return localBr
 }
 
+//TO IMPLEMENT
 func DeleteLocalBranches(branches interface{}) {
 
 	//convert branches to storer.ReferenceIter object
