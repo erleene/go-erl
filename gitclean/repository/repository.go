@@ -46,23 +46,20 @@ func GetLocalBranches(dir git.Repository) interface{} {
 //TO IMPLEMENT
 func DeleteLocalBranches(dir git.Repository, branches interface{}) {
 
-	//convert branches to storer.ReferenceIter object
 	localBr := branches.(storer.ReferenceIter)
 
 	localBr.ForEach(func(ref *plumbing.Reference) error {
 		refName := ref.Name()
 		//
 		switch refName.IsBranch() {
-		case refName != "refs/heads/master":
-			fmt.Printf("Branch:%s \n", refName)
+		case refName == "refs/heads/master":
+			fmt.Printf("MASTER BRANCH:%s \n", refName)
+		default:
+			fmt.Printf("DELETE THIS branch:%s \n", refName)
 
 			//to delete the branch we need a string of the branch name DeleteBranch(refName)
 			branchToDelete := refName.String()
 			dir.DeleteBranch(branchToDelete)
-
-		default:
-			fmt.Println("This is the master branch")
-			fmt.Printf("Branch:%s \n", refName)
 		}
 		return nil
 	})
