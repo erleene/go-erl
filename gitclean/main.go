@@ -2,7 +2,10 @@ package main
 
 //var branch string
 import (
-	rep "github.com/go-teach/git-clean/repository"
+	"log"
+
+	rep "github.com/go-erl/gitclean/repository"
+	git "gopkg.in/src-d/go-git.v4"
 )
 
 func main() {
@@ -15,7 +18,13 @@ func main() {
 	//}
 
 	dir := rep.CheckRepository()
-	branches := rep.GetLocalBranches(dir)
+
+	repo, err := git.PlainOpen(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	branches := rep.GetLocalBranches(*repo)
 	rep.DeleteLocalBranches(branches)
 
 }

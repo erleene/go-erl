@@ -18,7 +18,6 @@ import (
 //if the current directory is a repository, we then want to look at the Branches
 //we want to delete the local branches, except for MASTER
 
-//if dir contains .git folder then return true
 func CheckRepository() string {
 
 	dir, err := os.Getwd()
@@ -26,25 +25,21 @@ func CheckRepository() string {
 		log.Fatal(err)
 	}
 
-	//if dir contains .git folder then return true
+	//if dir contains .git folder then return it
 	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 
+		//this is a github repository
 		if info.IsDir() && info.Name() == ".git" {
-			fmt.Println("This is a github repository")
+			return nil
 		}
 		return nil
 	})
 	return dir
 }
 
-func GetLocalBranches(dir string) interface{} {
-	repo, err := git.PlainOpen(dir)
-	if err != nil {
-		return err
-	}
+func GetLocalBranches(dir git.Repository) interface{} {
 
-	localBr, _ := repo.Branches()
-
+	localBr, _ := dir.Branches()
 	return localBr
 }
 
