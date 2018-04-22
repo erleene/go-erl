@@ -2,6 +2,7 @@ package main
 
 //var branch string
 import (
+	"fmt"
 	"log"
 
 	rep "github.com/go-erl/gitclean/repository"
@@ -9,25 +10,20 @@ import (
 )
 
 func main() {
-	//branch := flag.String("branch", "", "the type of branch to list")
 
-	//flag.Parse()
+	dir := rep.CheckRepository() //path
 
-	//if *branch == "" {
-	//	fmt.Println("Please provide the type of branch to list")
-	//}
-
-	dir := rep.CheckRepository()
-
-	repo, err := git.PlainOpen(dir)
+	repo, err := git.PlainOpen(dir) // *Repository
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	branches := rep.GetLocalBranches(*repo)
+	config := rep.GetLocalBranches(*repo) //storer.ReferenceIter
 
+	fmt.Println("Br:", *config)
+	//branches := rep.GetLocalBranches(dir)
 	//STILL TO IMPLEMENT DELETE FUNCTION
 
-	rep.DeleteLocalBranches(*repo, branches)
+	//rep.DeleteLocalBranches(*repo, branches)
 
 }

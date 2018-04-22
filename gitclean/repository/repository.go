@@ -7,8 +7,10 @@ import (
 	"path/filepath"
 
 	git "gopkg.in/src-d/go-git.v4"
+	config "gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing"
-	"gopkg.in/src-d/go-git.v4/plumbing/storer"
+	storer "gopkg.in/src-d/go-git.v4/plumbing/storer"
+	//cli
 )
 
 //this package will contain the building blocks of the git-clean program
@@ -37,16 +39,42 @@ func CheckRepository() string {
 	return dir
 }
 
-func GetLocalBranches(dir git.Repository) interface{} {
+// func GetLocalBranches(dir git.Repository) interface{} {
+//
+// 	localBr, _ := dir.Branches()
+// 	return localBr
+// }
+func GetLocalBranches(dir git.Repository) *config.Config {
 
-	localBr, _ := dir.Branches()
-	return localBr
+	//list all branches using command line git branch
+
+	// localBr, _ := dir.Branches() //storer.ReferenceIter
+	// return localBr
+
+	//get Config
+	conf, err := dir.Config()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return conf
 }
 
 //TO IMPLEMENT
-func DeleteLocalBranches(dir git.Repository, branches interface{}) {
+func DeleteLocalBranches(dir git.Repository, br interface{}) {
 
-	localBr := branches.(storer.ReferenceIter)
+	localBr := br.(storer.ReferenceIter)
+
+	//get the branches of dir is a Repository that belongs to a struct with field
+
+	// branch, err := dir.Config()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	//
+	// bra := branch.Branches
+	//
+	// fmt.Println(bra)
 
 	localBr.ForEach(func(ref *plumbing.Reference) error {
 		refName := ref.Name()
@@ -58,8 +86,8 @@ func DeleteLocalBranches(dir git.Repository, branches interface{}) {
 			fmt.Printf("DELETE THIS branch:%s \n", refName)
 
 			//to delete the branch we need a string of the branch name DeleteBranch(refName)
-			branchToDelete := refName.String()
-			dir.DeleteBranch(branchToDelete)
+			//branchToDelete := refName.String()
+			//dir.DeleteBranch(branchToDelete)
 		}
 		return nil
 	})
