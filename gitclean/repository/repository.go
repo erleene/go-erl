@@ -51,32 +51,44 @@ func GetConfiguration(dir git.Repository) *config.Config {
 //TO IMPLEMENT
 func DeleteLocalBranches(dir git.Repository, conf config.Config) {
 
-	//list master branch
-	br := conf.Branches //map[string]*Branch
-	for BranchName, v := range br {
-		fmt.Println(BranchName)
-		n := v.Name
-		fmt.Println(":::", n)
-		fmt.Println(*v)
+	//list branchs
+	br := conf.Branches //Config struct with Branches (map[string]*Branch)
 
-		switch {
-		case BranchName == "master":
-			fmt.Println("===")
-		case BranchName == "local2":
-			//delete
-			fmt.Println("DELETING THIS BRANCH...")
-			err := dir.DeleteBranch(v.Name)
-			if err != nil {
-				log.Fatal(err)
-			}
-			er := dir.DeleteRemote(v.Name)
-			if er != nil {
-				log.Fatal(er)
-			}
-		default:
-			//DELETE
-			fmt.Println("====")
-		}
+	for brName, v := range br {
+		fmt.Printf("\n")
+		fmt.Println("==========")
+		fmt.Println("Branch Name:", brName)
+		fmt.Printf("\n")
+		fmt.Println("Branch:", *v)
+		fmt.Printf("\n")
+		refSpec := v.Merge
+		fmt.Println("Branch refspec value: ", refSpec)
+		fmt.Println("==========")
+		fmt.Printf("\n")
+
+		//TO DELETE A BRANCH FROM THE REPOSITORY: dir.DeleteBranch(v.Name)
+
+		// switch {
+		//
+		// case BranchName == "master":
+		// 	fmt.Println("\n")
+		// 	fmt.Println("This is the master branch")
+		//
+		// case BranchName == "local2":
+		// 	//delete
+		// 	fmt.Println("DELETING THIS BRANCH...")
+		// 	err := dir.DeleteBranch(v.Name)
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 	}
+		// 	er := dir.DeleteRemote(v.Name)
+		// 	if er != nil {
+		// 		log.Fatal(er)
+		// 	}
+		// default:
+		// 	//DELETE
+		// 	fmt.Println("====")
+		// }
 	}
 
 	//localBr := br.(storer.ReferenceIter)
