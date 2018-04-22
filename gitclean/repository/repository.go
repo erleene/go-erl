@@ -8,8 +8,6 @@ import (
 
 	git "gopkg.in/src-d/go-git.v4"
 	config "gopkg.in/src-d/go-git.v4/config"
-	"gopkg.in/src-d/go-git.v4/plumbing"
-	storer "gopkg.in/src-d/go-git.v4/plumbing/storer"
 	//cli
 )
 
@@ -39,17 +37,7 @@ func CheckRepository() string {
 	return dir
 }
 
-// func GetLocalBranches(dir git.Repository) interface{} {
-//
-// 	localBr, _ := dir.Branches()
-// 	return localBr
-// }
-func GetLocalBranches(dir git.Repository) *config.Config {
-
-	//list all branches using command line git branch
-
-	// localBr, _ := dir.Branches() //storer.ReferenceIter
-	// return localBr
+func GetConfiguration(dir git.Repository) *config.Config {
 
 	//get Config
 	conf, err := dir.Config()
@@ -61,9 +49,37 @@ func GetLocalBranches(dir git.Repository) *config.Config {
 }
 
 //TO IMPLEMENT
-func DeleteLocalBranches(dir git.Repository, br interface{}) {
+func DeleteLocalBranches(dir git.Repository, conf config.Config) {
 
-	localBr := br.(storer.ReferenceIter)
+	//list master branch
+	br := conf.Branches //map[string]*Branch
+	for BranchName, v := range br {
+		fmt.Println(BranchName)
+		n := v.Name
+		fmt.Println(":::", n)
+		fmt.Println(*v)
+
+		switch {
+		case BranchName == "master":
+			fmt.Println("===")
+		case BranchName == "local2":
+			//delete
+			fmt.Println("DELETING THIS BRANCH...")
+			err := dir.DeleteBranch(v.Name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			er := dir.DeleteRemote(v.Name)
+			if er != nil {
+				log.Fatal(er)
+			}
+		default:
+			//DELETE
+			fmt.Println("====")
+		}
+	}
+
+	//localBr := br.(storer.ReferenceIter)
 
 	//get the branches of dir is a Repository that belongs to a struct with field
 
@@ -76,20 +92,20 @@ func DeleteLocalBranches(dir git.Repository, br interface{}) {
 	//
 	// fmt.Println(bra)
 
-	localBr.ForEach(func(ref *plumbing.Reference) error {
-		refName := ref.Name()
-		//
-		switch refName.IsBranch() {
-		case refName == "refs/heads/master":
-			fmt.Printf("MASTER BRANCH:%s \n", refName)
-		default:
-			fmt.Printf("DELETE THIS branch:%s \n", refName)
-
-			//to delete the branch we need a string of the branch name DeleteBranch(refName)
-			//branchToDelete := refName.String()
-			//dir.DeleteBranch(branchToDelete)
-		}
-		return nil
-	})
+	// 	localBr.ForEach(func(ref *plumbing.Reference) error {
+	// 	refName := ref.Name()
+	// 	//
+	// 	switch refName.IsBranch() {
+	// 	case refName == "refs/heads/master":
+	// 		fmt.Printf("MASTER BRANCH:%s \n", refName)
+	// 	default:
+	// 		fmt.Printf("DELETE THIS branch:%s \n", refName)
+	//
+	// 		//to delete the branch we need a string of the branch name DeleteBranch(refName)
+	// 		//branchToDelete := refName.String()
+	// 		//dir.DeleteBranch(branchToDelete)
+	// 	}
+	// 	return nil
+	// })
 
 }

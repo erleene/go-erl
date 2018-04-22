@@ -2,7 +2,6 @@ package main
 
 //var branch string
 import (
-	"fmt"
 	"log"
 
 	rep "github.com/go-erl/gitclean/repository"
@@ -18,12 +17,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	config := rep.GetLocalBranches(*repo) //storer.ReferenceIter
+	config := rep.GetConfiguration(*repo) //config.Config
 
-	fmt.Println("Br:", *config)
+	//br := config.Branches
+
+	//fmt.Println("Br:", &br) //map[string]Branch
+
 	//branches := rep.GetLocalBranches(dir)
 	//STILL TO IMPLEMENT DELETE FUNCTION
 
-	//rep.DeleteLocalBranches(*repo, branches)
+	rep.DeleteLocalBranches(*repo, *config)
 
 }
