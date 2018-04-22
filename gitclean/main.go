@@ -10,7 +10,10 @@ import (
 
 func main() {
 
-	dir := rep.CheckRepository() //path
+	dir, err := rep.CheckRepository() //path
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	repo, err := git.PlainOpen(dir) // *Repository
 	if err != nil {
