@@ -52,9 +52,9 @@ func GetConfiguration(dir git.Repository) *config.Config {
 func DeleteLocalBranches(dir git.Repository, conf config.Config) {
 
 	//list branchs
-	br := conf.Branches //Config struct with Branches (map[string]*Branch)
+	//br := conf.Branches //Config struct with Branches (map[string]*Branch)
 
-	for brName, v := range br {
+	for brName, v := range conf.Branches {
 		fmt.Printf("\n")
 		fmt.Println("==========")
 		fmt.Println("Branch Name:", brName)
