@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	rep "github.com/go-erl/gitclean/repository"
+	rep "github.com/erleene/go-erl/gitclean/repository"
 	git "gopkg.in/src-d/go-git.v4"
 )
 

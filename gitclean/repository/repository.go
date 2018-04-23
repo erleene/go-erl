@@ -55,6 +55,8 @@ func DeleteLocalBranches(dir git.Repository, conf config.Config) {
 	//br := conf.Branches //Config struct with Branches (map[string]*Branch)
 
 	for brName, v := range conf.Branches {
+		fmt.Println("Branch:", brName)
+		fmt.Println("---------------")
 		fmt.Printf("\n")
 		fmt.Println("==========")
 		fmt.Println("Branch Name:", brName)
@@ -68,27 +70,27 @@ func DeleteLocalBranches(dir git.Repository, conf config.Config) {
 
 		//TO DELETE A BRANCH FROM THE REPOSITORY: dir.DeleteBranch(v.Name)
 
-		// switch {
-		//
-		// case BranchName == "master":
-		// 	fmt.Println("\n")
-		// 	fmt.Println("This is the master branch")
-		//
-		// case BranchName == "local2":
-		// 	//delete
-		// 	fmt.Println("DELETING THIS BRANCH...")
-		// 	err := dir.DeleteBranch(v.Name)
-		// 	if err != nil {
-		// 		log.Fatal(err)
-		// 	}
-		// 	er := dir.DeleteRemote(v.Name)
-		// 	if er != nil {
-		// 		log.Fatal(er)
-		// 	}
-		// default:
-		// 	//DELETE
-		// 	fmt.Println("====")
-		// }
+		switch {
+
+		case brName == "master":
+			//fmt.Println("\n")
+			fmt.Println("This is the master branch")
+
+		case brName == "local2":
+			//delete
+			fmt.Println("DELETING THIS BRANCH...")
+			err := dir.DeleteBranch(brName)
+			if err != nil {
+				log.Fatal(err)
+			}
+			er := dir.DeleteRemote(brName)
+			if er != nil {
+				log.Fatal(er)
+			}
+		default:
+			//DELETE
+			fmt.Println("====")
+		}
 	}
 
 	//localBr := br.(storer.ReferenceIter)
