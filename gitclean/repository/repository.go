@@ -11,12 +11,13 @@ import (
 	//cli
 )
 
-//this package will contain the building blocks of the git-clean program
-// it will outline its specifications, etc.
+/**
 
-//the idea is to have the program check if the current directory we're on is a Repository
-//if the current directory is a repository, we then want to look at the Branches
-//we want to delete the local branches, except for MASTER
+this package will contain the building blocks of the git-clean program
+the idea is to have the program check if the current directory we're on is a Repository
+if the current directory is a repository, we then want to look at the Branches
+we want to delete the local branches (and remote branches), except for MASTER
+ **/
 
 func CheckRepository() (string, error) {
 
@@ -44,7 +45,6 @@ func GetConfiguration(dir git.Repository) *config.Config {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	return conf
 }
 
@@ -55,41 +55,37 @@ func DeleteLocalBranches(dir git.Repository, conf config.Config) {
 	//br := conf.Branches //Config struct with Branches (map[string]*Branch)
 
 	for brName, v := range conf.Branches {
-		fmt.Println("Branch:", brName)
-		fmt.Println("---------------")
-		fmt.Printf("\n")
-		fmt.Println("==========")
 		fmt.Println("Branch Name:", brName)
-		fmt.Printf("\n")
-		fmt.Println("Branch:", *v)
-		fmt.Printf("\n")
+		fmt.Println("---------------")
+		fmt.Println("Branch:", v.Name)
 		refSpec := v.Merge
 		fmt.Println("Branch refspec value: ", refSpec)
 		fmt.Println("==========")
-		fmt.Printf("\n")
 
 		//TO DELETE A BRANCH FROM THE REPOSITORY: dir.DeleteBranch(v.Name)
-
 		switch {
 
 		case brName == "master":
 			//fmt.Println("\n")
-			fmt.Println("This is the master branch")
+			fmt.Printf("This is the master branch %v", v.Name)
+			fmt.Println("Branch:", v.Name)
 
 		case brName == "local2":
 			//delete
 			fmt.Println("DELETING THIS BRANCH...")
-			err := dir.DeleteBranch(brName)
+			//err := dir.DeleteBranch(brName)
+			err := dir.DeleteBranch(v.Name)
 			if err != nil {
 				log.Fatal(err)
 			}
-			er := dir.DeleteRemote(brName)
+			//er := dir.DeleteRemote(brName)
+			er := dir.DeleteRemote(v.Remote)
 			if er != nil {
 				log.Fatal(er)
 			}
 		default:
 			//DELETE
-			fmt.Println("====")
+			fmt.Println("")
 		}
 	}
 

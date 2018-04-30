@@ -22,13 +22,6 @@ func main() {
 
 	config := rep.GetConfiguration(*repo) //config.Config
 
-	//br := config.Branches
-
-	//fmt.Println("Br:", &br) //map[string]Branch
-
-	//branches := rep.GetLocalBranches(dir)
-	//STILL TO IMPLEMENT DELETE FUNCTION
-
 	rep.DeleteLocalBranches(*repo, *config)
 
 }
