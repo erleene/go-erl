@@ -27,7 +27,8 @@ func CheckRepository() (string, error) {
 	}
 
 	//if dir contains .git folder then return it
-	err1 := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	//REIMPLEMENT THIS BY TAKING ON THE DFS algorith
+	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 
 		//this is a github repository
 		if info.IsDir() && info.Name() == ".git" {
@@ -35,7 +36,7 @@ func CheckRepository() (string, error) {
 		}
 		return nil
 	})
-	return dir, err1
+	return dir, err
 }
 
 func GetConfiguration(dir git.Repository) *config.Config {
@@ -55,12 +56,12 @@ func DeleteLocalBranches(dir git.Repository, conf config.Config) {
 	//br := conf.Branches //Config struct with Branches (map[string]*Branch)
 
 	for brName, v := range conf.Branches {
+		fmt.Println("====================")
 		fmt.Println("Branch Name:", brName)
-		fmt.Println("---------------")
 		fmt.Println("Branch:", v.Name)
-		refSpec := v.Merge
-		fmt.Println("Branch refspec value: ", refSpec)
-		fmt.Println("==========")
+		fmt.Println("Remote:", v.Remote)
+		fmt.Println("Branch refspec value: ", v.Merge)
+		fmt.Println("====================")
 
 		//TO DELETE A BRANCH FROM THE REPOSITORY: dir.DeleteBranch(v.Name)
 		switch {
