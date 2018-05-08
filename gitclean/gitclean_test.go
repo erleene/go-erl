@@ -10,6 +10,7 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/config"
+	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 var gitWorkingDir string
@@ -51,12 +52,34 @@ func iHaveMultipleLocalBranches() error {
 		Merge:  "refs/heads/b2",
 	}
 	//IMPROVEMENT: if branch dont exist, create it.
+	//check to see if the branch exists by reference
+	repoBranches, err := repo.Branches()
+	if err != nil {
+		return err
+	}
 
-	repo.CreateBranch(&b1)
-	repo.CreateBranch(&b2)
+	repoBranches.ForEach(func(ref *plumbing.Reference) error {
+		refName := ref.Name()
+		refNameToCheck := string(refName)
 
+		switch {
+		case refNameToCheck == b1.Name:
+			break
+		case refNameToCheck == b2.Name:
+			break
+		default:
+			repo.CreateBranch(&b1)
+			repo.CreateBranch(&b2)
+		}
+		return nil
+	})
 	return nil
 }
+
+// repo.CreateBranch(&b1)
+// repo.CreateBranch(&b2)
+
+//return nil
 
 func iRunGitcleanInThatRepo() error {
 	err := RunGitClean(gitWorkingDir)
@@ -88,6 +111,7 @@ func iShouldOnlyBeLeftWithTheMasterBranch() error {
 	hasB1 := strings.Contains(string(bytes), "b1")
 	hasB2 := strings.Contains(string(bytes), "b2")
 
+	//if true
 	if hasB1 || hasB2 {
 		return fmt.Errorf("Did not expect branches: b1 and b2")
 	}
