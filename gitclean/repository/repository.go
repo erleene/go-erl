@@ -64,59 +64,27 @@ func DeleteLocalBranches(dir git.Repository, conf config.Config) {
 		fmt.Println("====================")
 
 		//TO DELETE A BRANCH FROM THE REPOSITORY: dir.DeleteBranch(v.Name)
+
 		switch {
 
 		case brName == "master":
 			//fmt.Println("\n")
 			fmt.Printf("This is the master branch %v", v.Name)
-			fmt.Println("Branch:", v.Name)
+			fmt.Println("Do not delete")
 
-		case brName == "local2":
-			//delete
-			fmt.Println("DELETING THIS BRANCH...")
-			//err := dir.DeleteBranch(brName)
+		default:
+
+			fmt.Printf("DELETING BRANCH...%v", v.Name)
+
 			err := dir.DeleteBranch(v.Name)
 			if err != nil {
 				log.Fatal(err)
 			}
-			//er := dir.DeleteRemote(brName)
+
 			er := dir.DeleteRemote(v.Remote)
 			if er != nil {
 				log.Fatal(er)
 			}
-		default:
-			//DELETE
-			fmt.Println("")
 		}
 	}
-
-	//localBr := br.(storer.ReferenceIter)
-
-	//get the branches of dir is a Repository that belongs to a struct with field
-
-	// branch, err := dir.Config()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	//
-	// bra := branch.Branches
-	//
-	// fmt.Println(bra)
-
-	// 	localBr.ForEach(func(ref *plumbing.Reference) error {
-	// 	refName := ref.Name()
-	// 	//
-	// 	switch refName.IsBranch() {
-	// 	case refName == "refs/heads/master":
-	// 		fmt.Printf("MASTER BRANCH:%s \n", refName)
-	// 	default:
-	// 		fmt.Printf("DELETE THIS branch:%s \n", refName)
-	//
-	// 		//to delete the branch we need a string of the branch name DeleteBranch(refName)
-	// 		//branchToDelete := refName.String()
-	// 		//dir.DeleteBranch(branchToDelete)
-	// 	}
-	// 	return nil
-	// })
-
 }

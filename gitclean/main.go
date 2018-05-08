@@ -21,6 +21,8 @@ func main() {
 	}
 
 }
+
+//function to delete local branches
 func RunGitClean(dir string) error {
 	dir, err := rep.CheckRepository() //path
 	if err != nil {
