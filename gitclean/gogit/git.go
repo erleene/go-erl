@@ -25,7 +25,7 @@ func LoadRepository(path string) {
 		path: path,
 	}
 
-	r.branches = make(map[string]Branch)
+	r.branches = make(map[string]Branch) //branch
 	branchNames := getRepositoryBranchNames(path)
 
   for _, name := branchNames {
