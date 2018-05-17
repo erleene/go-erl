@@ -27,8 +27,10 @@ func LoadRepository(path string) {
 
 	r.branches = make(map[string]Branch)
 	branchNames := getRepositoryBranchNames(path)
-	branches := createBranchesFromNames(branchNames)
 
+  for _, name := branchNames {
+    r.branches[name] = Branch{name: name,}
+  }
 }
 
 func (r *Repository) CreateBranch(branchName, branchRemote string) error {
