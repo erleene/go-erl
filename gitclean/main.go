@@ -9,20 +9,7 @@ import (
 	git "gopkg.in/src-d/go-git.v4"
 )
 
-func main() {
-	workingDir, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = RunGitClean(workingDir)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-}
-
-//function to delete local branches
+//RunGitClean function to delete local branches
 func RunGitClean(dir string) error {
 	dir, err := rep.CheckRepository() //path
 	if err != nil {
@@ -39,4 +26,18 @@ func RunGitClean(dir string) error {
 	rep.DeleteLocalBranches(*repo, *config)
 
 	return nil
+}
+
+func main() {
+	workingDir, err := os.Getwd()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = RunGitClean(workingDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
