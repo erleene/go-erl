@@ -52,7 +52,12 @@ func getRepositoryBranchNames(path string) map[string]Branch {
 
 	//make sure you are in the PATH
 	os.Chdir(path)
-	out, err := exec.Command("git ", "branch", "--list").Output()
+	localOut, err := exec.Command("git ", "branch", "--list").Output()
+
+	if err != nil {
+		return err
+	}
+	remoteOut, err := exec.Command("git ", "branch", "--remote").Output()
 
 	if err != nil {
 		return err
@@ -61,10 +66,13 @@ func getRepositoryBranchNames(path string) map[string]Branch {
 
 	branches := make(map[string]Branch)
 
-	for i := 0; i < len(out); i++ {
-		branches[] = out[i]
-	}
+	for i, j := 0; i < len(localOut), j < len(remoteOut); i++, j++ {
 
+		branches[i] = Branch {
+			name: i
+			remote: j
+		}
+	}
 }
 
 func (r *Repository) CreateBranch(branchName, branchRemote string) error {
