@@ -3,6 +3,7 @@ package gogit
 import (
 	"fmt"
 	"os/exec"
+	"strings"
 )
 
 //struct object
@@ -17,11 +18,13 @@ type Branch struct {
 	remote string
 }
 
+
+
 func LoadRepository(path string) {
-	name := getNameFromPath(path)
+	repoName := getNameFromPath(path)
 
 	r := &Repository{
-		name: "", //to take from the path
+		name: repoName, //to take from the path
 		path: path,
 	}
 
@@ -31,6 +34,37 @@ func LoadRepository(path string) {
   for _, name := branchNames {
     r.branches[name] = Branch{name: name,}
   }
+}
+
+func getNameFromPath(path string) string {
+
+	s := strings.Split(path, "/")
+
+	//get the last element of s
+	name := s[-1]
+
+	return name
+
+}
+
+func getRepositoryBranchNames(path string) map[string]Branch {
+	//from the path, run the command to collect the branch branchNames
+
+	//make sure you are in the PATH
+	os.Chdir(path)
+	out, err := exec.Command("git ", "branch", "--list").Output()
+
+	if err != nil {
+		return err
+	}
+	//create a new map
+
+	branches := make(map[string]Branch)
+
+	for i := 0; i < len(out); i++ {
+		branches[] = out[i]
+	}
+
 }
 
 func (r *Repository) CreateBranch(branchName, branchRemote string) error {
@@ -71,8 +105,21 @@ func (r *Repository) DeleteBranch(branchName string) error {
 
 func (r *Repository) ListLocalBranches() error {
 
+	out, err := exec.Command("git ", "branch", "--list").Output()
+
+	if err != nil {
+		return err
+	}
+	return out
+
 }
 
 func (r *Repository) ListRemoteBranches() error {
+	out, err := exec.Command("git ", "branch", "--remote").Output()
+
+	if err != nil {
+		return err
+	}
+	return out
 
 }
