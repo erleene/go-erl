@@ -18,6 +18,7 @@ the idea is to have the program check if the current directory we're on is a Rep
 if the current directory is a repository, we then want to look at the Branches
 we want to delete the local branches (and remote branches), except for MASTER
  **/
+
 const GitDirName = ".git"
 
 func CheckRepository() (string, error) {
@@ -40,7 +41,7 @@ func CheckRepository() (string, error) {
 	return dir, err
 }
 
-func GetConfiguration(dir git.Repository) *config.Config {
+func GetConfiguration(dir *git.Repository) *config.Config {
 
 	//get Config
 	conf, err := dir.Config()
@@ -55,7 +56,7 @@ func GetConfiguration(dir git.Repository) *config.Config {
 // }
 
 //TO IMPLEMENT
-func DeleteLocalBranches(dir git.Repository, conf config.Config) {
+func DeleteLocalBranches(dir *git.Repository, conf *config.Config) {
 
 	//list branchs
 	//br := conf.Branches //Config struct with Branches (map[string]*Branch)
@@ -69,30 +70,28 @@ func DeleteLocalBranches(dir git.Repository, conf config.Config) {
 		fmt.Println("Branch refspec value: ", v.Merge)
 		fmt.Println("====================")
 
-		//TO DELETE A BRANCH FROM THE REPOSITORY: dir.DeleteBranch(v.Name)
+		//		TO DELETE A BRANCH FROM THE REPOSITORY: dir.DeleteBranch(v.Name)
 
-		// switch {
-		//
-		// case brName == "master":
-		// 	fmt.Println("\n")
-		// 	fmt.Printf("This is the master branch: %v", v.Name)
-		// 	fmt.Printf("\n")
-		// 	fmt.Println("Do not delete...")
-		//
-		// default:
-		// 	fmt.Printf("Delete...%v", v.Name)
-		//
-		// 	// fmt.Printf("DELETING BRANCH...%v", v.Name)
-		// 	//
-		// 	// err := dir.DeleteBranch(v.Name)
-		// 	// if err != nil {
-		// 	// 	log.Fatal(err)
-		// 	// }
-		// 	//
-		// 	// er := dir.DeleteRemote(v.Remote)
-		// 	// if er != nil {
-		// 	// 	log.Fatal(er)
-		// 	//}
-		// }
+		switch {
+
+		case brName == "master":
+			fmt.Printf("This is the master branch: %v \n", v.Name)
+			fmt.Println("Do not delete...")
+
+		default:
+			fmt.Printf("Delete...%v \n", v.Name)
+
+			fmt.Printf("DELETING BRANCH...%v \n", v.Name)
+
+			err := dir.DeleteBranch(v.Name)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			er := dir.DeleteRemote(v.Remote)
+			if er != nil {
+				log.Fatal(er)
+			}
+		}
 	}
 }

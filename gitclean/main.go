@@ -2,6 +2,7 @@ package main
 
 //var branch string
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -21,10 +22,26 @@ func RunGitClean(dir string) error {
 		return err
 	}
 
-	config := rep.GetConfiguration(*repo) //config.Config
+	config, _ := repo.Config()
+	for key, value := range config.Branches {
+		fmt.Printf("key: %s, value: %s\n", key, value.Name)
+	}
 
-	rep.DeleteLocalBranches(*repo, *config)
+	if branch, exists := config.Branches["local1"]; exists {
+		fmt.Printf("branch %s exists", "local1")
+		if err := repo.DeleteBranch(branch.Name); err != nil {
+			fmt.Println(err.Error())
+		}
 
+		if err := repo.DeleteRemote(branch.Name); err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+
+	// config := rep.GetConfiguration(repo) //config.Config
+	//
+	// rep.DeleteLocalBranches(repo, config)
+	//
 	return nil
 }
 

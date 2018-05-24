@@ -129,5 +129,4 @@ func (r *Repository) ListRemoteBranches() error {
 		return err
 	}
 	return out
-
 }
