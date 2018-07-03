@@ -16,10 +16,11 @@ func RunGitClean(dir string) error {
 	}
 	//dir is a repo
 	//lets now list all the branches in this repo
-	localBrances, err = rep.getLocalBranches(dir)
+	localBrances, err = rep.GetLocalBranches(dir)
 	if err != nil {
 		return err
 	}
+	//go through each branch and list them all
 
 	// repo, err := git.PlainOpen(dir) // *Repository
 	// if err != nil {

@@ -46,6 +46,8 @@ func GetLocalBranches(dir string) map[int]Branch {
 
 	branches := make(map[int]Branch)
 
+	//now we need to use os/exec to list the branches
+
 }
 
 // func GetConfiguration(dir *git.Repository) *config.Config {
