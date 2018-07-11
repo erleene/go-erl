@@ -2,6 +2,7 @@ package main
 
 //var branch string
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -14,37 +15,14 @@ func RunGitClean(dir string) error {
 	if err != nil {
 		return err
 	}
-	//dir is a repo
-	//lets now list all the branches in this repo
-	localBrances, err = rep.GetLocalBranches(dir)
+
+	//dir is a git repository
+	localBranches, err := rep.ListLocalBranches(dir)
 	if err != nil {
 		return err
 	}
-	//go through each branch and list them all
 
-	// repo, err := git.PlainOpen(dir) // *Repository
-	// if err != nil {
-	// 	return err
-	// }
-	//
-	// config, _ := repo.Config()
-	// for key, value := range config.Branches {
-	// 	//print local branches with remote branches
-	// 	fmt.Printf("key: %s, value: %s\n", key, value.Name)
-	//
-	// 	//check for remote branches of the coinfig
-	// }
-
-	// if branch, exists := config.Branches["local1"]; exists {
-	// 	fmt.Printf("branch %s exists", "local1")
-	// 	if err := repo.DeleteBranch(branch.Name); err != nil {
-	// 		fmt.Println(err.Error())
-	// 	}
-	//
-	// 	if err := repo.DeleteRemote(branch.Name); err != nil {
-	// 		fmt.Println(err.Error())
-	// 	}
-	// }
+	fmt.Printf("%s\n", localBranches)
 
 	return nil
 }

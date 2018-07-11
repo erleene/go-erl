@@ -19,7 +19,6 @@ type Branch struct {
 }
 
 
-
 func LoadRepository(path string) {
 	repoName := getNameFromPath(path)
 
@@ -37,19 +36,14 @@ func LoadRepository(path string) {
 }
 
 func getNameFromPath(path string) string {
-
 	s := strings.Split(path, "/")
-
 	//get the last element of s
 	name := s[-1]
-
 	return name
-
 }
 
 func getRepositoryBranchNames(path string) map[string]Branch {
 	//from the path, run the command to collect the branch branchNames
-
 	//make sure you are in the PATH
 	os.Chdir(path)
 	localOut, err := exec.Command("git ", "branch", "--list").Output()
@@ -57,6 +51,7 @@ func getRepositoryBranchNames(path string) map[string]Branch {
 	if err != nil {
 		return err
 	}
+
 	remoteOut, err := exec.Command("git ", "branch", "--remote").Output()
 
 	if err != nil {
@@ -66,31 +61,31 @@ func getRepositoryBranchNames(path string) map[string]Branch {
 
 	branches := make(map[string]Branch)
 
-	for i, j := 0; i < len(localOut), j < len(remoteOut); i++, j++ {
-
-		branches[i] = Branch {
-			name: i
-			remote: j
+	counter := 0
+	for i, j := 0, 0; i < len(localOut); i, j = i+1, j+1 {
+		branches[counter] = &Branch {
+			name : localOut[i],
+			remote : remoteOut[j],
 		}
 	}
 }
 
-func (r *Repository) CreateBranch(branchName, branchRemote string) error {
-
-	b := Branch{name: branchName, remote: branchRemote}
-
-	out, err := exec.Command("git ", "checkout", "-b", branchName).Output()
-
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(out))
-
-	r.branches[branchName] = b
-
-	return nil
-}
+// func (r *Repository) CreateBranch(branchName, branchRemote string) error {
+//
+// 	b := Branch{name: branchName, remote: branchRemote}
+//
+// 	out, err := exec.Command("git ", "checkout", "-b", branchName).Output()
+//
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	fmt.Println(string(out))
+//
+// 	r.branches[branchName] = b
+//
+// 	return nil
+// }
 
 func (r *Repository) DeleteBranch(branchName string) error {
 
@@ -108,7 +103,6 @@ func (r *Repository) DeleteBranch(branchName string) error {
 		return nil
 	}
 	return nil
-
 }
 
 func (r *Repository) ListLocalBranches() error {
