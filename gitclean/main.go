@@ -7,7 +7,6 @@ import (
 	"os"
 
 	rep "github.com/erleene/go-erl/gitclean/repository"
-	git "gopkg.in/src-d/go-git.v4"
 )
 
 //RunGitClean function to delete local branches
@@ -17,31 +16,14 @@ func RunGitClean(dir string) error {
 		return err
 	}
 
-	repo, err := git.PlainOpen(dir) // *Repository
+	//dir is a git repository
+	localBranches, err := rep.ListLocalBranches(dir)
 	if err != nil {
 		return err
 	}
 
-	config, _ := repo.Config()
-	for key, value := range config.Branches {
-		fmt.Printf("key: %s, value: %s\n", key, value.Name)
-	}
+	fmt.Printf("%s\n", localBranches)
 
-	if branch, exists := config.Branches["local1"]; exists {
-		fmt.Printf("branch %s exists", "local1")
-		if err := repo.DeleteBranch(branch.Name); err != nil {
-			fmt.Println(err.Error())
-		}
-
-		if err := repo.DeleteRemote(branch.Name); err != nil {
-			fmt.Println(err.Error())
-		}
-	}
-
-	// config := rep.GetConfiguration(repo) //config.Config
-	//
-	// rep.DeleteLocalBranches(repo, config)
-	//
 	return nil
 }
 

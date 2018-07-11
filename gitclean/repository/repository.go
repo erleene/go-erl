@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
-
-	git "gopkg.in/src-d/go-git.v4"
-	config "gopkg.in/src-d/go-git.v4/config"
 	//cli
 )
 
@@ -19,11 +17,24 @@ if the current directory is a repository, we then want to look at the Branches
 we want to delete the local branches (and remote branches), except for MASTER
  **/
 
+//struct object
+type Repository struct {
+	name     string
+	path     string
+	branches map[string]Branch
+}
+
+type Branch struct {
+	name   string
+	remote string
+}
+
 const GitDirName = ".git"
 
 func CheckRepository() (string, error) {
 
 	dir, err := os.Getwd()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,57 +52,53 @@ func CheckRepository() (string, error) {
 	return dir, err
 }
 
-func GetConfiguration(dir *git.Repository) *config.Config {
+func (r *Repository) DeleteBranch(branchName string) error {
 
-	//get Config
-	conf, err := dir.Config()
+	if _, ok := r.branches[branchName]; ok {
+		out, err := exec.Command("git ", "branch", "-D", branchName).Output()
+
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(string(out))
+
+		delete(r.branches, branchName)
+
+		return nil
+	}
+	return nil
+}
+
+func ListLocalBranches(path string) ([]byte, error) {
+	os.Chdir(path)
+	cmd := exec.Command("git", "branch", "--list")
+
+	stdoutStderr, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return conf
+
+	return stdoutStderr, err
 }
 
-// func updateConfig(conf config.Config) error {
-// 	//after deleting or creating branches, update the conf of reference
-// }
+func (r *Repository) ListRemoteBranches() ([]byte, error) {
+	out, err := exec.Command("git", "branch", "--remote").Output()
 
-//TO IMPLEMENT
-func DeleteLocalBranches(dir *git.Repository, conf *config.Config) {
-
-	//list branchs
-	//br := conf.Branches //Config struct with Branches (map[string]*Branch)
-
-	for brName, v := range conf.Branches {
-		fmt.Printf("\n")
-		fmt.Println("====================")
-		fmt.Println("Branch Name:", brName)
-		fmt.Println("Branch:", v.Name)
-		fmt.Println("Remote:", v.Remote)
-		fmt.Println("Branch refspec value: ", v.Merge)
-		fmt.Println("====================")
-
-		//		TO DELETE A BRANCH FROM THE REPOSITORY: dir.DeleteBranch(v.Name)
-
-		switch {
-
-		case brName == "master":
-			fmt.Printf("This is the master branch: %v \n", v.Name)
-			fmt.Println("Do not delete...")
-
-		default:
-			fmt.Printf("Delete...%v \n", v.Name)
-
-			fmt.Printf("DELETING BRANCH...%v \n", v.Name)
-
-			err := dir.DeleteBranch(v.Name)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			er := dir.DeleteRemote(v.Remote)
-			if er != nil {
-				log.Fatal(er)
-			}
-		}
+	if err != nil {
+		return nil, err
 	}
+	return out, err
+}
+
+//
+func GetLocalBranches(dir string) ([]byte, error) {
+
+	//now we need to use os/exec to list the branches
+	out, err := exec.Command("git ", "branch", "--list").Output()
+
+	if err != nil {
+		return nil, err
+	}
+	return out, err
 }
