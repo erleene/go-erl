@@ -22,7 +22,20 @@ func RunGitClean(dir string) error {
 		return err
 	}
 
+	//dir is a git repository
+	// remoteBranches, err := rep.ListRemoteBranches(dir)
+	// if err != nil {
+	// 	return err
+	// }
+
 	fmt.Printf("%s\n", localBranches)
+
+	//delete branches other than MASTER
+	for k, v := range localBranches {
+		fmt.Println(k)
+		fmt.Println(v)
+
+	}
 
 	return nil
 }

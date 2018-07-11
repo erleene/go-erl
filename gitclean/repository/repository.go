@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -52,20 +51,12 @@ func CheckRepository() (string, error) {
 	return dir, err
 }
 
-func (r *Repository) DeleteBranch(branchName string) error {
+func DeleteBranch(branchName string) error {
 
-	if _, ok := r.branches[branchName]; ok {
-		out, err := exec.Command("git ", "branch", "-D", branchName).Output()
-
-		if err != nil {
-			return err
-		}
-
-		fmt.Println(string(out))
-
-		delete(r.branches, branchName)
-
-		return nil
+	//if it's not master, delete it
+	if branchName != "master" {
+		cmd := exec.Command("git ", "branch", "-D", branchName)
+		cmd.Run()
 	}
 	return nil
 }
@@ -82,23 +73,14 @@ func ListLocalBranches(path string) ([]byte, error) {
 	return stdoutStderr, err
 }
 
-func (r *Repository) ListRemoteBranches() ([]byte, error) {
-	out, err := exec.Command("git", "branch", "--remote").Output()
+func ListRemoteBranches(path string) ([]byte, error) {
+	os.Chdir(path)
+	cmd := exec.Command("git", "branch", "--remote")
 
+	stdoutStderr, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-	return out, err
-}
 
-//
-func GetLocalBranches(dir string) ([]byte, error) {
-
-	//now we need to use os/exec to list the branches
-	out, err := exec.Command("git ", "branch", "--list").Output()
-
-	if err != nil {
-		return nil, err
-	}
-	return out, err
+	return stdoutStderr, err
 }
