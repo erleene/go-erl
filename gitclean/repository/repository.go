@@ -51,21 +51,10 @@ func CheckRepository() (string, error) {
 	return dir, err
 }
 
-func DeleteBranch(branchName string) error {
-
-	//if it's not master, delete it
-	if branchName != "master" {
-		cmd := exec.Command("git ", "branch", "-D", branchName)
-		cmd.Run()
-	}
-	return nil
-}
-
 func ListLocalBranches(path string) ([]byte, error) {
 	os.Chdir(path)
-	cmd := exec.Command("git", "branch", "--list")
+	stdoutStderr, err := exec.Command("git", "branch", "--list").Output()
 
-	stdoutStderr, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,14 +62,24 @@ func ListLocalBranches(path string) ([]byte, error) {
 	return stdoutStderr, err
 }
 
-func ListRemoteBranches(path string) ([]byte, error) {
+func DeleteBranch(path string, branchName string) ([]byte, error) {
 	os.Chdir(path)
-	cmd := exec.Command("git", "branch", "--remote")
-
-	stdoutStderr, err := cmd.CombinedOutput()
+	combOutput, err := exec.Command("git", "branch", "--delete", "--force", branchName).CombinedOutput()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-
-	return stdoutStderr, err
+	return combOutput, err
 }
+
+//
+// func ListRemoteBranches(path string) ([]byte, error) {
+// 	os.Chdir(path)
+// 	cmd := exec.Command("git", "branch", "--remote")
+//
+// 	stdoutStderr, err := cmd.CombinedOutput()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+//
+// 	return stdoutStderr, err
+// }

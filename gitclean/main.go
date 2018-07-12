@@ -5,38 +5,35 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	rep "github.com/erleene/go-erl/gitclean/repository"
 )
 
 //RunGitClean function to delete local branches
 func RunGitClean(dir string) error {
+	var outputs []string
 	dir, err := rep.CheckRepository() //path
 	if err != nil {
 		return err
 	}
 
-	//dir is a git repository
 	localBranches, err := rep.ListLocalBranches(dir)
 	if err != nil {
 		return err
 	}
 
-	//dir is a git repository
-	// remoteBranches, err := rep.ListRemoteBranches(dir)
-	// if err != nil {
-	// 	return err
-	// }
-
-	fmt.Printf("%s\n", localBranches)
-
-	//delete branches other than MASTER
-	for k, v := range localBranches {
-		fmt.Println(k)
-		fmt.Println(v)
-
+	outputs = append(outputs, strings.TrimSpace(string(localBranches)))
+	//
+	for _, v := range outputs {
+		if v != "master" {
+			fmt.Println("Deleting branch...", v)
+			_, err := rep.DeleteBranch(dir, v)
+			if err != nil {
+				return err
+			}
+		}
 	}
-
 	return nil
 }
 
