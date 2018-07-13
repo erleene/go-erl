@@ -25,15 +25,12 @@ func RunGitClean(dir string) error {
 
 	outputs = append(outputs, strings.TrimSpace(string(localBranches)))
 	//
-	for _, v := range outputs {
-		if v != "master" {
-			fmt.Println("Deleting branch...", v)
-			_, err := rep.DeleteBranch(dir, v)
-			if err != nil {
-				return err
-			}
-		}
-	}
+	// for _, v := range outputs {
+	// 	if v != "master" {
+	// 		fmt.Println(v)
+	// 	}
+	// }
+	fmt.Println(outputs)
 	return nil
 }
 

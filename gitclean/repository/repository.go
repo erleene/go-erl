@@ -64,7 +64,7 @@ func ListLocalBranches(path string) ([]byte, error) {
 
 func DeleteBranch(path string, branchName string) ([]byte, error) {
 	os.Chdir(path)
-	combOutput, err := exec.Command("git", "branch", "--delete", "--force", branchName).CombinedOutput()
+	combOutput, err := exec.Command("git", "branch", "--delete", "--force", branchName).Output()
 	if err != nil {
 		return nil, err
 	}
