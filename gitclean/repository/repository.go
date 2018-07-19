@@ -16,18 +16,6 @@ if the current directory is a repository, we then want to look at the Branches
 we want to delete the local branches (and remote branches), except for MASTER
  **/
 
-//struct object
-type Repository struct {
-	name     string
-	path     string
-	branches map[string]Branch
-}
-
-type Branch struct {
-	name   string
-	remote string
-}
-
 const GitDirName = ".git"
 
 func CheckRepository() (string, error) {
@@ -51,35 +39,24 @@ func CheckRepository() (string, error) {
 	return dir, err
 }
 
-func ListLocalBranches(path string) ([]byte, error) {
+func ListLocalBranches(path string) (string, error) {
 	os.Chdir(path)
 	stdoutStderr, err := exec.Command("git", "branch", "--list").Output()
 
 	if err != nil {
 		log.Fatal(err)
 	}
+	//convert to []string
+	s := string(stdoutStderr)
 
-	return stdoutStderr, err
+	return s, err
 }
 
-func DeleteBranch(path string, branchName string) ([]byte, error) {
+func DeleteBranch(path string, branchName string) error {
 	os.Chdir(path)
-	combOutput, err := exec.Command("git", "branch", "--delete", "--force", branchName).Output()
+	_, err := exec.Command("git", "branch", "-D", branchName).Output()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return combOutput, err
+	return err
 }
-
-//
-// func ListRemoteBranches(path string) ([]byte, error) {
-// 	os.Chdir(path)
-// 	cmd := exec.Command("git", "branch", "--remote")
-//
-// 	stdoutStderr, err := cmd.CombinedOutput()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-//
-// 	return stdoutStderr, err
-// }
