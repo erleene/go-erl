@@ -39,7 +39,7 @@ func CheckRepository() (string, error) {
 	return dir, err
 }
 
-func ListLocalBranches(path string) (string, error) {
+func ListLocalBranches(path string) ([]byte, error) {
 	os.Chdir(path)
 	stdoutStderr, err := exec.Command("git", "branch", "--list").Output()
 
@@ -47,9 +47,9 @@ func ListLocalBranches(path string) (string, error) {
 		log.Fatal(err)
 	}
 	//convert to []string
-	s := string(stdoutStderr)
+	//s := string(stdoutStderr)
 
-	return s, err
+	return stdoutStderr, err
 }
 
 func DeleteBranch(path string, branchName string) error {
