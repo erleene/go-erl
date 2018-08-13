@@ -1,10 +1,12 @@
 package repository
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	//cli
 )
 
@@ -39,24 +41,39 @@ func CheckRepository() (string, error) {
 	return dir, err
 }
 
-func ListLocalBranches(path string) ([]byte, error) {
+func ListLocalBranches(path string) (string, error) {
+	//var out []string
+
 	os.Chdir(path)
-	stdoutStderr, err := exec.Command("git", "branch", "--list").Output()
+	stdoutStderr, err := exec.Command("git", "branch", "--list").CombinedOutput() //[]byte
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	//convert to []string
-	//s := string(stdoutStderr)
 
-	return stdoutStderr, err
+	output := strings.Fields(string(stdoutStderr))
+
+	//fmt.Println(strings.Join(output, ","))
+
+	te := strings.Join(output, ",")
+
+	//remove * and MASTER from te
+	noM := strings.Trim(te, "master")
+	fmt.Println(strings.TrimRight(noM, "*"))
+
+	//fmt.Println(noM)
+	//newOut := strings.Trim(output, "* & master")
+	return strings.Join(output, ","), err
 }
 
 func DeleteBranch(path string, branchName string) error {
+
 	os.Chdir(path)
 	_, err := exec.Command("git", "branch", "-D", branchName).Output()
+
 	if err != nil {
 		return err
 	}
+
 	return err
 }
