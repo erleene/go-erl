@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -41,28 +40,73 @@ func CheckRepository() (string, error) {
 	return dir, err
 }
 
-func ListLocalBranches(path string) ([]string, error) {
+type Repository struct {
+	LocalBranches  []string
+	RemoteBranches []string
+}
+
+func ListBranches(path string) (r *Repository, error) {
 
 	os.Chdir(path)
-	stdoutStderr, err := exec.Command("git", "branch", "--list").CombinedOutput() //[]byte
+	localStderr, err := exec.Command("git", "branch", "--list").CombinedOutput() //[]byte
+	remoteStderr, err := exec.Command("git", "branch", "-r").CombinedOutput()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	output := strings.Fields(string(stdoutStderr))
+	var r Repository
 
-	var branches []string
+	localOutput := strings.Fields(string(localStderr))
+	remoteOutput := strings.Fields(string(remoteStderr))
 
-	for i := 0; i < len(output); i++ {
-		branches = append(branches, output[i])
-		fmt.Println(branches[i])
+	var localBranches []string
+	var remoteBranches []string
+
+	for i := 0; i < len(localOutput); i++ {
+		localBranches := append(localBranches, localOutput[i])
 	}
 
-	return branches, err
+	for j := 0; j < len(remoteOutput); j++ {
+		remoteBranches := append(remoteBranches, remoteOutput[j])
+
+	}
+	//now add the arrays to the struct
+	r = Repository{
+		LocalBranches:  localBranches,
+		remoteBranches: remoteBranches,
+	}
+	// var branches []string
+	//
+	// for i := 0; i < len(output); i++ {
+	// 	branches = append(branches, output[i])
+	// }
+	//
+	// return branches, err
+	return r
 }
 
-func DeleteLocalBranches(path string, branches []string) error {
+// func ListBranches(path string) ([]string, error) {
+//
+// 	os.Chdir(path)
+// 	stdoutStderr, err := exec.Command("git", "branch", "--list").CombinedOutput() //[]byte
+//
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+//
+// 	output := strings.Fields(string(stdoutStderr))
+//
+// 	var branches []string
+//
+// 	for i := 0; i < len(output); i++ {
+// 		branches = append(branches, output[i])
+// 	}
+//
+// 	return branches, err
+// }
+
+func DeleteBranches(path string, branches []string) error {
 
 	os.Chdir(path)
 
@@ -70,9 +114,8 @@ func DeleteLocalBranches(path string, branches []string) error {
 	for i := 0; i < len(branches); i++ {
 		if branches[i] != "master" {
 			_, err := exec.Command("git", "branch", "-D", branches[i]).Output()
-
 			if err != nil {
-				return err
+				log.Fatal(err)
 			}
 		}
 	}

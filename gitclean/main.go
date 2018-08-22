@@ -14,12 +14,12 @@ func RunGitClean(dir string) error {
 		return err
 	}
 
-	branches, err := rep.ListLocalBranches(dir)
+	branches, err := rep.ListBranches(dir)
 	if err != nil {
 		return err
 	}
 
-	rep.DeleteLocalBranches(dir, branches)
+	rep.DeleteBranches(dir, branches)
 
 	return nil
 }
