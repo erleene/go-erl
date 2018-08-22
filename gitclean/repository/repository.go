@@ -41,8 +41,7 @@ func CheckRepository() (string, error) {
 	return dir, err
 }
 
-func ListLocalBranches(path string) (string, error) {
-	//var out []string
+func ListLocalBranches(path string) ([]string, error) {
 
 	os.Chdir(path)
 	stdoutStderr, err := exec.Command("git", "branch", "--list").CombinedOutput() //[]byte
@@ -53,27 +52,29 @@ func ListLocalBranches(path string) (string, error) {
 
 	output := strings.Fields(string(stdoutStderr))
 
-	//fmt.Println(strings.Join(output, ","))
+	var branches []string
 
-	te := strings.Join(output, ",")
-
-	//remove * and MASTER from te
-	noM := strings.Trim(te, "master")
-	fmt.Println(strings.TrimRight(noM, "*"))
-
-	//fmt.Println(noM)
-	//newOut := strings.Trim(output, "* & master")
-	return strings.Join(output, ","), err
-}
-
-func DeleteBranch(path string, branchName string) error {
-
-	os.Chdir(path)
-	_, err := exec.Command("git", "branch", "-D", branchName).Output()
-
-	if err != nil {
-		return err
+	for i := 0; i < len(output); i++ {
+		branches = append(branches, output[i])
+		fmt.Println(branches[i])
 	}
 
-	return err
+	return branches, err
+}
+
+func DeleteLocalBranches(path string, branches []string) error {
+
+	os.Chdir(path)
+
+	//delete all except MASTER
+	for i := 0; i < len(branches); i++ {
+		if branches[i] != "master" {
+			_, err := exec.Command("git", "branch", "-D", branches[i]).Output()
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

@@ -9,30 +9,18 @@ import (
 
 //RunGitClean function to delete local branches
 func RunGitClean(dir string) error {
-	//var outputs []string
 	dir, err := rep.CheckRepository() //path
 	if err != nil {
 		return err
 	}
 
-	_, err = rep.ListLocalBranches(dir)
+	branches, err := rep.ListLocalBranches(dir)
 	if err != nil {
 		return err
 	}
 
-	//}
+	rep.DeleteLocalBranches(dir, branches)
 
-	//out := string(localBranches)
-	//newOut := strings.TrimPrefix(localBranches, "*")
-	//outputs = append(outputs, strings.TrimSpace(newOut))
-	//store the results in one string so do a concatenation
-	//toDelete := strings.TrimSuffix(localBranches, "* master")
-	// for _, v := range outputs {
-	// 	if v == "master" {
-	// 		fmt.Printf("%v", v)
-	// 	}
-	// }
-	//fmt.Println(localBranches)
 	return nil
 }
 
