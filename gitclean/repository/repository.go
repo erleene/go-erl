@@ -55,8 +55,11 @@ func ListLocalBranches(path string) ([]string, error) {
 	var branches []string
 
 	for i := 0; i < len(output); i++ {
-		branches = append(branches, output[i])
-		fmt.Println(branches[i])
+		if output[i] != "master" {
+			branches = append(branches, output[i])
+			fmt.Println("appending...", branches[i])
+		}
+
 	}
 
 	return branches, err
@@ -69,6 +72,7 @@ func DeleteLocalBranches(path string, branches []string) error {
 	//delete all except MASTER
 	for i := 0; i < len(branches); i++ {
 		if branches[i] != "master" {
+			fmt.Println("Deleting...", branches[i])
 			_, err := exec.Command("git", "branch", "-D", branches[i]).Output()
 
 			if err != nil {
