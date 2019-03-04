@@ -1,11 +1,12 @@
 package repository
 
 import (
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 	//cli
 )
 
@@ -20,16 +21,15 @@ we want to delete the local branches (and remote branches), except for MASTER
 const GitDirName = ".git"
 
 func CheckRepository() (string, error) {
-
-	dir, err := os.Getwd()
-
-	if err != nil {
-		log.Fatal(err)
+	log.Info("Checking directory for git branches...")
+	dir, geterr := os.Getwd()
+	if geterr != nil {
+		return "", geterr
 	}
 
 	//if dir contains .git folder then return it
 	//REIMPLEMENT THIS BY TAKING ON THE DFS algorith
-	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 
 		//this is a github repository
 		if info.IsDir() && info.Name() == GitDirName {
@@ -45,17 +45,15 @@ type Repository struct {
 	RemoteBranches []string
 }
 
-func ListBranches(path string) (r *Repository, error) {
-
+func ListBranches(path string) (*Repository, error) {
+	log.Info("List Branches to delete...")
 	os.Chdir(path)
 	localStderr, err := exec.Command("git", "branch", "--list").CombinedOutput() //[]byte
 	remoteStderr, err := exec.Command("git", "branch", "-r").CombinedOutput()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Unabled to fetch branches %v", err)
 	}
-
-	var r Repository
 
 	localOutput := strings.Fields(string(localStderr))
 	remoteOutput := strings.Fields(string(remoteStderr))
@@ -64,26 +62,16 @@ func ListBranches(path string) (r *Repository, error) {
 	var remoteBranches []string
 
 	for i := 0; i < len(localOutput); i++ {
-		localBranches := append(localBranches, localOutput[i])
+		localBranches = append(localBranches, localOutput[i])
 	}
-
 	for j := 0; j < len(remoteOutput); j++ {
-		remoteBranches := append(remoteBranches, remoteOutput[j])
-
+		remoteBranches = append(remoteBranches, remoteOutput[j])
 	}
-	//now add the arrays to the struct
-	r = Repository{
+	log.Info("Completed fetching branches to delete...")
+	return &Repository{
 		LocalBranches:  localBranches,
-		remoteBranches: remoteBranches,
-	}
-	// var branches []string
-	//
-	// for i := 0; i < len(output); i++ {
-	// 	branches = append(branches, output[i])
-	// }
-	//
-	// return branches, err
-	return r
+		RemoteBranches: remoteBranches,
+	}, err
 }
 
 // func ListBranches(path string) ([]string, error) {
@@ -106,18 +94,32 @@ func ListBranches(path string) (r *Repository, error) {
 // 	return branches, err
 // }
 
-func DeleteBranches(path string, branches []string) error {
-
+func DeleteLocalBranches(path string, branches *Repository) error {
+	log.Info("Preparing to delete branches")
 	os.Chdir(path)
 
 	//delete all except MASTER
-	for i := 0; i < len(branches); i++ {
-		if branches[i] != "master" {
-			_, err := exec.Command("git", "branch", "-D", branches[i]).Output()
+	for i := 0; i < len(branches.LocalBranches); i++ {
+		log.Info("preparing local...")
+		if branches.LocalBranches[i] != "master" {
+			_, err := exec.Command("git", "branch", "-D", branches.LocalBranches[i]).Output()
+			if err != nil {
+				log.Fatalf("unable to delete local branches: %v", err)
+				os.Exit(1)
+			}
+			log.Info("completed preparing local branches")
+		}
+	}
+
+	for j := 0; j < len(branches.RemoteBranches); j++ {
+		log.Info("preparing remote...")
+		if branches.RemoteBranches[j] != "master" {
+			_, err := exec.Command("git", "branch", "-D", branches.RemoteBranches[j]).Output()
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
+		log.Info("Compelted preparing for remote branches")
 	}
 	return nil
 }

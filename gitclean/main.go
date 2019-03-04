@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	rep "github.com/erleene/go-erl/gitclean/repository"
 )
@@ -11,7 +12,8 @@ import (
 func RunGitClean(dir string) error {
 	dir, err := rep.CheckRepository() //path
 	if err != nil {
-		return err
+		log.Fatalf("Unabled to check repository: %v", err)
+
 	}
 
 	branches, err := rep.ListBranches(dir)
@@ -19,21 +21,23 @@ func RunGitClean(dir string) error {
 		return err
 	}
 
-	rep.DeleteBranches(dir, branches)
-
+	delErr := rep.DeleteLocalBranches(dir, branches)
+	if delErr != nil {
+		return err
+	}
 	return nil
 }
 
 func main() {
 	workingDir, err := os.Getwd()
-
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Unabled to get working directory %v", err)
 	}
+	log.Info("Fetched working directory to check...")
 
-	err = RunGitClean(workingDir)
-	if err != nil {
-		log.Fatal(err)
+	Runerr := RunGitClean(workingDir)
+	if Runerr != nil {
+		log.Fatalf("Unabled to to delete branches: %v", err)
 	}
 
 }
