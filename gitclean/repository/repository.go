@@ -82,7 +82,6 @@ func DeleteLocalBranches(path string, branches *Repository) error {
 
 	//delete all except MASTER
 	for i := 0; i < len(branches.LocalBranches); i++ {
-		log.Info("preparing local...")
 		if branches.LocalBranches[i] != "master" && branches.LocalBranches[i] != "*" {
 			log.Printf("%v", branches.LocalBranches[i])
 			_, err := exec.Command("git", "branch", "-D", branches.LocalBranches[i]).Output()
@@ -97,10 +96,8 @@ func DeleteLocalBranches(path string, branches *Repository) error {
 	}
 
 	for j := 0; j < len(branches.RemoteBranches); j++ {
-		log.Info("preparing remote...")
 		if branches.RemoteBranches[j] != "origin/HEAD" && branches.RemoteBranches[j] != "->" && branches.RemoteBranches[j] != "origin/master" {
 			log.Printf("Deleting remote : %v", branches.RemoteBranches[j])
-
 			_, err := exec.Command("git", "push", "origin", "--delete", strings.Replace(branches.RemoteBranches[j], "origin/", "", -1)).Output()
 			if err != nil {
 				log.Fatal(err)
@@ -122,5 +119,5 @@ func UpdateBranches(path string) error {
 		return err
 	}
 	return nil
-	//git remote update origin --prune
+
 }
