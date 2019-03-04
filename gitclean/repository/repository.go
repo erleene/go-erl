@@ -61,12 +61,13 @@ func ListBranches(path string) (*Repository, error) {
 	var localBranches []string
 	var remoteBranches []string
 
-
 	for i := 0; i < len(localOutput); i++ {
 		localBranches = append(localBranches, localOutput[i])
+		log.Infof("Fetching local branch for deletion: %v", localBranches[i])
 	}
 	for j := 0; j < len(remoteOutput); j++ {
 		remoteBranches = append(remoteBranches, remoteOutput[j])
+		log.Infof("Fetching remote branch for deletion: %v", remoteBranches[j])
 	}
 	log.Info("Completed fetching branches to delete...")
 	return &Repository{
@@ -75,26 +76,6 @@ func ListBranches(path string) (*Repository, error) {
 	}, err
 }
 
-// func ListBranches(path string) ([]string, error) {
-//
-// 	os.Chdir(path)
-// 	stdoutStderr, err := exec.Command("git", "branch", "--list").CombinedOutput() //[]byte
-//
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-//
-// 	output := strings.Fields(string(stdoutStderr))
-//
-// 	var branches []string
-//
-// 	for i := 0; i < len(output); i++ {
-// 		branches = append(branches, output[i])
-// 	}
-//
-// 	return branches, err
-// }
-
 func DeleteLocalBranches(path string, branches *Repository) error {
 	log.Info("Preparing to delete branches")
 	os.Chdir(path)
@@ -102,25 +83,44 @@ func DeleteLocalBranches(path string, branches *Repository) error {
 	//delete all except MASTER
 	for i := 0; i < len(branches.LocalBranches); i++ {
 		log.Info("preparing local...")
-		if branches.LocalBranches[i] != "master" {
+		if branches.LocalBranches[i] != "master" && branches.LocalBranches[i] != "*" {
+			log.Printf("%v", branches.LocalBranches[i])
 			_, err := exec.Command("git", "branch", "-D", branches.LocalBranches[i]).Output()
 			if err != nil {
 				log.Fatalf("unable to delete local branches: %v", err)
 				os.Exit(1)
 			}
-			log.Info("completed preparing local branches")
+		} else {
+			log.Info("No local branches to delete...")
 		}
+		log.Info("completed preparing local branches")
 	}
 
 	for j := 0; j < len(branches.RemoteBranches); j++ {
 		log.Info("preparing remote...")
-		if branches.RemoteBranches[j] != "master" {
-			_, err := exec.Command("git", "branch", "-D", branches.RemoteBranches[j]).Output()
+		if branches.RemoteBranches[j] != "origin/HEAD" && branches.RemoteBranches[j] != "->" && branches.RemoteBranches[j] != "origin/master" {
+			log.Printf("Deleting remote : %v", branches.RemoteBranches[j])
+
+			_, err := exec.Command("git", "push", "origin", "--delete", strings.Replace(branches.RemoteBranches[j], "origin/", "", -1)).Output()
 			if err != nil {
 				log.Fatal(err)
 			}
+		} else {
+			log.Info("No remote branches to delete...")
 		}
-		log.Info("Compelted preparing for remote branches")
+		log.Info("Completed preparing for remote branches")
 	}
 	return nil
+}
+
+func UpdateBranches(path string) error {
+	os.Chdir(path)
+	_, err := exec.Command("git", "remote", "update", "origin", "--prune").Output()
+	if err != nil {
+		log.Fatalf("unable to delete local branches: %v", err)
+		os.Exit(1)
+		return err
+	}
+	return nil
+	//git remote update origin --prune
 }

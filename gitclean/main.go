@@ -13,7 +13,11 @@ func RunGitClean(dir string) error {
 	dir, err := rep.CheckRepository() //path
 	if err != nil {
 		log.Fatalf("Unabled to check repository: %v", err)
+	}
 
+	updateerr := rep.UpdateBranches(dir)
+	if updateerr != nil {
+		return updateerr
 	}
 
 	branches, err := rep.ListBranches(dir)
@@ -25,6 +29,7 @@ func RunGitClean(dir string) error {
 	if delErr != nil {
 		return err
 	}
+
 	return nil
 }
 
