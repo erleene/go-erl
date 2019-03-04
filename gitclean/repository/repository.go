@@ -61,6 +61,7 @@ func ListBranches(path string) (*Repository, error) {
 	var localBranches []string
 	var remoteBranches []string
 
+
 	for i := 0; i < len(localOutput); i++ {
 		localBranches = append(localBranches, localOutput[i])
 	}
